@@ -244,3 +244,37 @@ mat = round(mat, digits = 2)
 
 # export table
 xtable(mat, caption = 'Summary statistics', label = 'tab:summary')
+
+
+##### Asset Holding by the end of each period #####
+# collect player ID
+uniqueplayer = unique(df_csv$participant.code)
+min = min(df_csv$subsession.round_number)
+max = max(df_csv$subsession.round_number)
+
+# asset holding container
+mat = matrix(0, nrow = length(uniqueplayer), 
+              ncol = 2*(max-min+1))
+rownames(mat) = uniqueplayer
+colnames(mat) = c(2,2,3,3,4,4,5,5,6,6,7,7,8,8)
+
+mata = matrix(0, nrow = length(uniqueplayer), 
+             ncol = max-min+1)
+rownames(mata) = uniqueplayer
+colnames(mata) = seq(from=min, to=max)
+
+matb = mata
+matdiff = mata
+
+# locate the specific player at the specific trading period
+for (i in min:max){
+  for (j in 1:length(uniqueplayer)){
+    data = filter(df_csv, participant.code == uniqueplayer[j],
+                          subsession.round_number == i)
+    mat[j,2*(i-1)-1] = as.integer(substring(data$player.settled_assets,7,7))
+    mat[j,2*(i-1)] = as.integer(substring(data$player.settled_assets,15,15))
+    mata[j,i-1] = mat[j,2*(i-1)-1]
+    matb[j,i-1] = mat[j,2*(i-1)]
+    matdiff[j,i-1] = mata[j,i-1] - matb[j,i-1]
+  }
+}
