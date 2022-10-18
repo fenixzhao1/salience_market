@@ -51,37 +51,70 @@ for (i in 1:length(df_json)){
   df_trade_b = df_json[[i]]$exchange_data[[2]]$trades
   
   # loop over asset A trade data
-  for (j in 1:length(df_trade_a)){
-    temp = df_trade_a[[j]]
-    df_a = rbind(df_a, c(temp$timestamp, temp$price))
+  if (length(df_trade_a)!=0){
+    for (j in 1:length(df_trade_a)){
+      temp = df_trade_a[[j]]
+      df_a = rbind(df_a, c(temp$timestamp, temp$price))
+    }
+    colnames(df_a) = c('time','price')
   }
-  colnames(df_a) = c('time','price')
   
   # loop over asset B trade data
-  for (j in 1:length(df_trade_b)){
-    temp = df_trade_b[[j]]
-    df_b = rbind(df_b, c(temp$timestamp, temp$price))
+  if (length(df_trade_b)!=0){
+    for (j in 1:length(df_trade_b)){
+      temp = df_trade_b[[j]]
+      df_b = rbind(df_b, c(temp$timestamp, temp$price))
+    }
+    colnames(df_b) = c('time','price')
   }
-  colnames(df_b) = c('time','price')
   
   # draw graphs
-  title = paste('market', treatment, 'round', round, sep = '_')
+  title = paste(session, treatment, 'round', round, sep = '_')
   file = paste(here('figures/'), '/', title, sep = "")
   file = paste(file, ".png", sep = "")
   png(file, width = 1000, height = 600)
-  pic = ggplot() +
-    geom_hline(yintercept=100) + 
-    geom_line(data = df_a, aes(x=time, y=price), colour = 'red', size = 1) +
-    geom_point(data = df_a, aes(x=time, y=price), colour = 'red', size = 3) +
-    geom_line(data = df_b, aes(x=time, y=price), colour = 'blue', size = 1) +
-    geom_point(data = df_b, aes(x=time, y=price), colour = 'blue', size = 3) +
-    scale_x_continuous(name='time stamp', waiver()) +
-    scale_y_continuous(name='price', limits=c(20,180),
-                       breaks = c(20,80,100,120,180)) +
-    theme_bw() + 
-    theme(plot.title = element_text(hjust = 0.5, size = 20),
-          axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),
-          axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 15))
+  
+  if (length(df_a)!=0 & length(df_b)!=0){
+    pic = ggplot() +
+      geom_hline(yintercept=100) + 
+      geom_line(data = df_a, aes(x=time, y=price), colour = 'red', size = 1) +
+      geom_point(data = df_a, aes(x=time, y=price), colour = 'red', size = 3) +
+      geom_line(data = df_b, aes(x=time, y=price), colour = 'blue', size = 1) +
+      geom_point(data = df_b, aes(x=time, y=price), colour = 'blue', size = 3) +
+      scale_x_continuous(name='time stamp', waiver()) +
+      scale_y_continuous(name='price', limits=c(20,180),
+                         breaks = c(20,80,100,120,180)) +
+      theme_bw() + 
+      theme(plot.title = element_text(hjust = 0.5, size = 20),
+            axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),
+            axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 15))
+  }
+  else if (length(df_a)!=0){
+    pic = ggplot() +
+      geom_hline(yintercept=100) + 
+      geom_line(data = df_a, aes(x=time, y=price), colour = 'red', size = 1) +
+      geom_point(data = df_a, aes(x=time, y=price), colour = 'red', size = 3) +
+      scale_x_continuous(name='time stamp', waiver()) +
+      scale_y_continuous(name='price', limits=c(20,180),
+                         breaks = c(20,80,100,120,180)) +
+      theme_bw() + 
+      theme(plot.title = element_text(hjust = 0.5, size = 20),
+            axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),
+            axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 15))
+  }
+  else if (length(df_b)!=0){
+    pic = ggplot() +
+      geom_hline(yintercept=100) + 
+      geom_line(data = df_b, aes(x=time, y=price), colour = 'blue', size = 1) +
+      geom_point(data = df_b, aes(x=time, y=price), colour = 'blue', size = 3) +
+      scale_x_continuous(name='time stamp', waiver()) +
+      scale_y_continuous(name='price', limits=c(20,180),
+                         breaks = c(20,80,100,120,180)) +
+      theme_bw() + 
+      theme(plot.title = element_text(hjust = 0.5, size = 20),
+            axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),
+            axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 15))
+  }
   
   print(pic)
   dev.off()
