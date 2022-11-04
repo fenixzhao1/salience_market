@@ -82,8 +82,8 @@ for (i in 1:length(df_json)){
       geom_line(data = df_b, aes(x=time, y=price), colour = 'blue', size = 1) +
       geom_point(data = df_b, aes(x=time, y=price), colour = 'blue', size = 3) +
       scale_x_continuous(name='time stamp', waiver()) +
-      scale_y_continuous(name='price', limits=c(20,180),
-                         breaks = c(20,80,100,120,180)) +
+      scale_y_continuous(name='price', limits=c(50,150),
+                         breaks = c(50,80,100,120,150)) +
       theme_bw() + 
       theme(plot.title = element_text(hjust = 0.5, size = 20),
             axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),
@@ -95,8 +95,8 @@ for (i in 1:length(df_json)){
       geom_line(data = df_a, aes(x=time, y=price), colour = 'red', size = 1) +
       geom_point(data = df_a, aes(x=time, y=price), colour = 'red', size = 3) +
       scale_x_continuous(name='time stamp', waiver()) +
-      scale_y_continuous(name='price', limits=c(20,180),
-                         breaks = c(20,80,100,120,180)) +
+      scale_y_continuous(name='price', limits=c(50,150),
+                         breaks = c(50,80,100,120,150)) +
       theme_bw() + 
       theme(plot.title = element_text(hjust = 0.5, size = 20),
             axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),
@@ -108,8 +108,8 @@ for (i in 1:length(df_json)){
       geom_line(data = df_b, aes(x=time, y=price), colour = 'blue', size = 1) +
       geom_point(data = df_b, aes(x=time, y=price), colour = 'blue', size = 3) +
       scale_x_continuous(name='time stamp', waiver()) +
-      scale_y_continuous(name='price', limits=c(20,180),
-                         breaks = c(20,80,100,120,180)) +
+      scale_y_continuous(name='price', limits=c(50,150),
+                         breaks = c(50,80,100,120,150)) +
       theme_bw() + 
       theme(plot.title = element_text(hjust = 0.5, size = 20),
             axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),
