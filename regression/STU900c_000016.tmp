@@ -1,0 +1,28 @@
+	(1)	(2)	(3)
+VARIABLES	price	price	price
+			
+three_states	2.06***	-3.23***	3.21***
+	(0.000)	(0.000)	(0.275)
+state_independent	21.19***	11.48***	22.33***
+	(0.000)	(0.000)	(0.721)
+only_a	29.91***		26.97***
+	(0.000)		(0.500)
+3.round_number			7.94
+			(7.939)
+4.round_number			21.89**
+			(5.332)
+5.round_number			15.63*
+			(5.628)
+6.round_number			17.26*
+			(6.371)
+7.round_number			18.33
+			(8.479)
+8.round_number			12.17
+			(7.861)
+only_b		14.26***	
+		(1.656)	
+Constant	88.41***	95.28***	75.02***
+	(0.000)	(0.000)	(5.286)
+			
+Observations	247	392	247
+R-squared	0.493	0.401	0.621
