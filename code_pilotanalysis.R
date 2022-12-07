@@ -8,28 +8,21 @@ library(haven)
 library(rjson)
 library(xtable)
 
-# add paths to files
-path_csv = list.files(path=here('pilot/'), pattern="*.csv")
-path_json = list.files(path=here('pilot/'), pattern="*.json")
-
-# import data from csv
-df_csv = NULL
-for(i in seq(along=path_csv)){
-  d = read.csv(paste(here('pilot/'), '/', path_csv[i], sep=''),
+# open data
+# from csv
+df_csv = read.csv(paste(here(), '/data_csv.csv', sep=''),
                header=T, stringsAsFactors = FALSE)
-  df_csv = rbind(df_csv, d)
-}
-df_csv = filter(df_csv, subsession.round_number <= 8 & subsession.practice != 1)
+df_trade = read.csv(paste(here(), '/data_trade.csv', sep=''),
+                    header=T, stringsAsFactors = FALSE)
 
-# import data from json
+# from json
 df_json = NULL
+path_json = list.files(path=here('pilot/'), pattern="*.json")
 for(i in seq(along=path_json)){
   d = fromJSON(file=paste(here('pilot/'), '/', path_json[i], sep=''))
   df_json = c(df_json, d)
 }
-
-# remove temporary dataset
-rm(d)
+rm(d, path_json)
 
 
 ##### Market-level Dynamics #####
@@ -277,6 +270,71 @@ mat = round(mat, digits = 2)
 
 # export table
 xtable(mat, caption = 'Summary statistics', label = 'tab:summary')
+
+
+##### Summary Statistics by Sessions #####
+# create data matrix by sessions
+uniquesession = unique(df_csv$session.code)
+mat = matrix(0, nrow = 6, ncol = length(uniquesession))
+rownames(mat) = c('# of groups', '# of trades', 
+                  'Asset A price mean', 'Asset A price variance',
+                  'Asset B price mean', 'Asset B price variance')
+colnames(mat) = uniquesession
+
+# add columns to df_trade
+df_trade = df_trade %>% mutate(
+  group_id = paste(session_code, round_number, id_in_subsession, sep = '_'),
+)
+df_trade = filter(df_trade, round_number > 1)
+
+# loop over to get data for each market
+for (i in 1:length(uniquesession)){
+  df = filter(df_trade, session_code == uniquesession[i])
+  df_a = filter(df_trade, session_code == uniquesession[i] & asset_id == 'A')
+  df_b = filter(df_trade, session_code == uniquesession[i] & asset_id == 'B')
+  mat[1,i] = length(unique(df$group_id))
+  mat[2,i] = length(df$group_id)
+  mat[3,i] = mean(df_a$price)
+  mat[4,i] = var(df_a$price)
+  mat[5,i] = mean(df_b$price)
+  mat[6,i] = var(df_b$price)
+}
+# export table
+xtable(mat, caption = 'Summary statistics', label = 'tab:summary')
+
+
+##### Asset Holding by the end of each period #####
+# collect player ID
+uniqueplayer = unique(df_csv$participant.code)
+min = min(df_csv$subsession.round_number)
+max = max(df_csv$subsession.round_number)
+
+# asset holding container
+mat = matrix(0, nrow = length(uniqueplayer), 
+             ncol = 2*(max-min+1))
+rownames(mat) = uniqueplayer
+colnames(mat) = c(2,2,3,3,4,4,5,5,6,6,7,7,8,8)
+
+mata = matrix(0, nrow = length(uniqueplayer), 
+              ncol = max-min+1)
+rownames(mata) = uniqueplayer
+colnames(mata) = seq(from=min, to=max)
+
+matb = mata
+matdiff = mata
+
+# locate the specific player at the specific trading period
+for (i in min:max){
+  for (j in 1:length(uniqueplayer)){
+    data = filter(df_csv, participant.code == uniqueplayer[j],
+                  subsession.round_number == i)
+    mat[j,2*(i-1)-1] = as.integer(substring(data$player.settled_assets,7,7))
+    mat[j,2*(i-1)] = as.integer(substring(data$player.settled_assets,15,15))
+    mata[j,i-1] = mat[j,2*(i-1)-1]
+    matb[j,i-1] = mat[j,2*(i-1)]
+    matdiff[j,i-1] = mata[j,i-1] - matb[j,i-1]
+  }
+}
 
 
 ##### Asset Holding by the end of each period #####

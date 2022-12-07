@@ -118,3 +118,4 @@ rm(df_treat, temp, temp_a, temp_b, temp_tr)
 
 # export aggreagate data file
 write_dta(df_reg, here("data_reg.dta"))
+write.csv(df_reg, here('data_trade.csv'))
